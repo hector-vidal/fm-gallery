@@ -1,0 +1,13 @@
+{
+  "config": {
+    "default": true,
+    // Technical prose does not wrap at a fixed width; enforcing it would only produce noise.
+    "MD013": false,
+    // Tables use padded pipes, not the compact style.
+    "MD060": { "style": "padded" },
+    // CHANGELOG.md repeats "Añadido" and "Corregido" once per version, as Keep a Changelog does.
+    "MD024": { "siblings_only": true }
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["**/node_modules/**", ".venv/**", ".pytest_cache/**"]
+}

@@ -1,0 +1,44 @@
+# Without this, only the last command decides whether the commit goes through.
+set -e
+
+# The evident shapes of a credential, and nothing subtler: this is not a scanner
+# and does not pretend to be one. What holds the rule up is the review of every
+# change; this only catches what nobody meant to send.
+credential='gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY|(api[_-]?key|secret|token|password)[[:punct:][:space:]]{0,3}[:=][[:punct:][:space:]]{0,3}[A-Za-z0-9/+=_-]{16,}'
+
+# Variable references are blanked out before the search: `password: ${DB_PASS}`
+# names a secret, it does not carry one. They are removed rather than the whole
+# line skipped, so a line holding both a reference and a real literal still gets
+# caught. Without this the hook fires on every compose file and every script that
+# reads a credential from the environment, which is what we ask them to do.
+blank_variables='s/\$\{[^}]*\}//g; s/\$[A-Za-z_][A-Za-z0-9_]*//g'
+
+# A line marked `test-credential` is a fixture password inside a test. The marker
+# is explicit and greppable, so every exemption can be listed at once with
+# `grep -rn test-credential`. It is a deliberate hole, and review is what keeps
+# it honest, same as the rest of this hook.
+marker='test-credential'
+
+# The staged blob is read and not the working tree, because what reaches the
+# history is what has to be clean. `sed` works line by line, so the line numbers
+# reported still match the file. What gets reported is where it is, never what it
+# says: a secret echoed to the terminal is a secret in one more place.
+#
+# LC_ALL=C on the sed is not cosmetic. Under a UTF-8 locale it aborts with
+# "illegal byte sequence" on the first binary file staged - a PNG is enough - and
+# because that failure is swallowed by the pipeline, the file would be skipped
+# silently instead of scanned. Byte-wise is what we want anyway; `grep -I` is
+# what decides to skip a binary, and it can only decide that if it gets the data.
+secrets=$(git diff --cached --name-only --diff-filter=ACM | while IFS= read -r file; do
+    git show ":$file" | LC_ALL=C sed -E "$blank_variables" | grep -IinE "$credential" |
+        grep -IivE "$marker" | cut -d: -f1 | sed "s|^|$file:|"
+done) || true
+
+test -z "$secrets" || { echo "secrets: staged content looks like a credential"; echo "$secrets"; exit 1; }
+
+# The same gates the remote runs, so the remote is never stricter than this
+# machine. See .github/workflows/.
+pnpm run --silent lint
+pnpm run --silent typecheck
+pnpm run --silent lint:md
+pnpm run --silent test
