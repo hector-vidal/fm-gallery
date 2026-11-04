@@ -2,7 +2,7 @@
 
 ## Ramas
 
-El trabajo ocurre en `dev`, y `main` recibe solo fusiones por *pull request* desde `dev`. Su regla de protección exigirá los checks `static` y `tests` (pendiente en [TO-DO](TO-DO.md)). Sin vistas previas por *pull request*: se prueba en local. Las operaciones de git las hace el usuario, nunca un agente.
+El trabajo ocurre en `dev`, y `main` recibe solo fusiones por *pull request* desde `dev`. Su regla de protección exige los checks `static` y `tests`. Sin vistas previas por *pull request*: se prueba en local. Las operaciones de git las hace el usuario, nunca un agente.
 
 ## Mensajes de *commit*
 
