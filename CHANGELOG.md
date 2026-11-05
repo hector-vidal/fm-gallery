@@ -6,4 +6,6 @@ Los cambios relevantes de cada versión publicada, con el formato de [Keep a Cha
 
 ### Añadido
 
-- Página provisional de la galería en `/fm-gallery/`, todavía sin retos.
+- Una tarjeta por reto, con su captura, su nombre y su dificultad, del más reciente al más antiguo.
+- Filtros por dificultad y por tecnología.
+- Una ficha por reto con su descripción y un botón por cada versión publicada.

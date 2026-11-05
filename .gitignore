@@ -439,3 +439,5 @@ node_modules/
 .coverage
 coverage.xml
 .DS_Store
+# The Python template above ignores lib/; the gallery code lives in src/lib/.
+!src/lib/
