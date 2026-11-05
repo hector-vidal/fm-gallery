@@ -1,0 +1,10 @@
+{
+  "name": "Social proof section",
+  "description": "Sección de testimonios con valoraciones y tarjetas de clientes.",
+  "difficulty": "Newbie",
+  "screenshot": "screenshot.png",
+  "variants": [
+    { "folder": "vanilla", "technologies": ["HTML", "CSS"] },
+    { "folder": "react", "technologies": ["React", "TypeScript", "CSS"] }
+  ]
+}

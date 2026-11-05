@@ -29,3 +29,6 @@ jobs:
 
       - name: build
         run: pnpm run build
+        env:
+          # Reads every challenge.json through the GitHub API with the workflow's rate limit.
+          GITHUB_TOKEN: ${{ github.token }}

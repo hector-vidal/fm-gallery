@@ -1,15 +1,178 @@
 ---
-const title = "Retos de Frontend Mentor";
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import { DIFFICULTIES, TECHNOLOGIES } from "../lib/challenges";
+import { getChallenges } from "../lib/data";
+
+const challenges = await getChallenges();
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+// Only technologies some challenge uses, so no filter ever comes back empty.
+const technologies = TECHNOLOGIES.filter((t) => challenges.some((c) => c.technologies.includes(t)));
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <h1>{title}</h1>
-    <p>Galería en construcción.</p>
-  </body>
-</html>
+<Base
+  title="Retos de Frontend Mentor"
+  description="Galería de mis soluciones a los retos de Frontend Mentor, filtrable por dificultad y por tecnología."
+>
+  <main class="container">
+    <header>
+      <h1>Retos de Frontend Mentor</h1>
+      <p class="intro">Mis soluciones, cada una en una o varias tecnologías.</p>
+    </header>
+
+    {
+      challenges.length === 0 ? (
+        <p>Todavía no hay retos publicados.</p>
+      ) : (
+        <>
+          <form id="filters" class="filters" aria-label="Filtros">
+            <label>
+              Dificultad
+              <select name="difficulty">
+                <option value="">Todas</option>
+                {DIFFICULTIES.map((d) => (
+                  <option>{d}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Tecnología
+              <select name="technology">
+                <option value="">Todas</option>
+                {technologies.map((t) => (
+                  <option>{t}</option>
+                ))}
+              </select>
+            </label>
+          </form>
+
+          <ul class="grid">
+            {challenges.map((c) => (
+              <li class="card" data-difficulty={c.difficulty} data-technologies={c.technologies.join("|")}>
+                <a href={`${base}${c.slug}/`}>
+                  <Image class="screenshot" src={c.screenshotUrl} inferSize width={640} alt="" />
+                  <span class="card-body">
+                    <span class="card-title">{c.name}</span>
+                    <span class="badge">{c.difficulty}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p id="no-results" role="status" hidden>
+            Ningún reto cumple los filtros.
+          </p>
+        </>
+      )
+    }
+  </main>
+</Base>
+
+<script>
+  import { matches } from "../lib/filter";
+
+  const form = document.querySelector<HTMLFormElement>("#filters");
+  const noResults = document.querySelector<HTMLElement>("#no-results");
+  const cards = [...document.querySelectorAll<HTMLElement>(".card")];
+
+  form?.addEventListener("change", () => {
+    const data = new FormData(form);
+    const filter = {
+      difficulty: data.get("difficulty")?.toString() ?? "",
+      technology: data.get("technology")?.toString() ?? "",
+    };
+    let shown = 0;
+    for (const card of cards) {
+      const visible = matches(
+        {
+          difficulty: card.dataset.difficulty ?? "",
+          technologies: (card.dataset.technologies ?? "").split("|"),
+        },
+        filter,
+      );
+      card.hidden = !visible;
+      if (visible) shown++;
+    }
+    if (noResults) noResults.hidden = shown > 0;
+  });
+</script>
+
+<style>
+  .intro {
+    color: var(--color-muted);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space);
+    margin-block: calc(1.5 * var(--space));
+  }
+
+  .filters label {
+    display: grid;
+    gap: 0.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+
+  select {
+    min-width: 12rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: calc(1.5 * var(--space));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card a {
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 150ms ease-out,
+      border-color 150ms ease-out;
+  }
+
+  @media (hover: hover) {
+    .card a:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card a {
+      transition: none;
+    }
+  }
+
+  .card-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: var(--space);
+  }
+
+  .card-title {
+    font-weight: 600;
+  }
+</style>

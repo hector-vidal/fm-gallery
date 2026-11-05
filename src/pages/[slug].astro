@@ -1,0 +1,104 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import { variantHref, type Challenge } from "../lib/challenges";
+import { getChallenges } from "../lib/data";
+
+export const getStaticPaths = (async () => {
+  const challenges = await getChallenges();
+  return challenges.map((challenge) => ({ params: { slug: challenge.slug }, props: { challenge } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  challenge: Challenge;
+}
+
+const { challenge } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+---
+
+<Base title={`${challenge.name} · Retos de Frontend Mentor`} description={challenge.description}>
+  <main class="container">
+    <a href={base}>← Todos los retos</a>
+
+    <article class="detail">
+      <Image class="screenshot" src={challenge.screenshotUrl} inferSize width={1280} alt="" />
+      <div>
+        <h1>{challenge.name}</h1>
+        <span class="badge">{challenge.difficulty}</span>
+        <p>{challenge.description}</p>
+
+        <h2>Variantes</h2>
+        <ul class="variants">
+          {
+            challenge.variants.map((v) => (
+              <li>
+                <a class="button" href={variantHref(challenge, v.folder)}>
+                  {v.technologies.join(" · ")}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p>
+          <a href={`https://github.com/hector-vidal/${challenge.repository}`}>Código en GitHub</a>
+        </p>
+      </div>
+    </article>
+  </main>
+</Base>
+
+<style>
+  .detail {
+    display: grid;
+    gap: calc(2 * var(--space));
+    margin-top: calc(1.5 * var(--space));
+  }
+
+  @media (width >= 56rem) {
+    .detail {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+    }
+  }
+
+  .detail :global(.screenshot) {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 1.125rem;
+  }
+
+  .variants {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .button {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--color-accent);
+    color: var(--color-accent-text);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .button:hover {
+      filter: brightness(1.1);
+    }
+  }
+</style>

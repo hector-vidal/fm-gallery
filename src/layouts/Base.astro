@@ -1,0 +1,106 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-bg: #f6f7f9;
+    --color-surface: #fff;
+    --color-text: #1b1d22;
+    --color-muted: #5b606b;
+    --color-border: #dde0e6;
+    --color-accent: #3e54d3;
+    --color-accent-text: #fff;
+    --radius: 12px;
+    --space: 1rem;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #121418;
+      --color-surface: #1c1f25;
+      --color-text: #eceef2;
+      --color-muted: #a2a8b4;
+      --color-border: #2e323b;
+      --color-accent: #8c9cff;
+      --color-accent-text: #121418;
+    }
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font);
+    line-height: 1.5;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  a {
+    color: var(--color-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .container {
+    width: min(100% - 2 * var(--space), 72rem);
+    margin-inline: auto;
+    padding-block: calc(2 * var(--space));
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+  }
+
+  .screenshot {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    background: var(--color-border);
+  }
+</style>
