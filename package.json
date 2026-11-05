@@ -17,10 +17,10 @@
     "lint:md:fix": "markdownlint-cli2 --fix"
   },
   "dependencies": {
-    "astro": "7.4.0"
+    "astro": "7.4.5"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
+    "@astrojs/check": "0.9.12",
     "@commitlint/cli": "21.2.1",
     "@commitlint/config-conventional": "21.2.0",
     "@eslint/js": "10.0.1",
