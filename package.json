@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Gallery of Frontend Mentor challenge solutions, published on GitHub Pages.",
-  "packageManager": "pnpm@11.13.1+sha512.b2fc7683b8a6525414e7d13e1ba28caaddde96bf66ec540bfaeb7e702b81f3e0be4d1f295edf7f9fe0396740a8dce4509c582ddf79891f4543fea32d37645f25",
+  "packageManager": "pnpm@11.28.11+sha512.740184d10f81f5d5b165be88560ee7ba62406c4134896abc27a580109eec2f47c1e41d91251c944c2cababcb1c22461799ebb72de2ec625af2030b0e36c735a3",
   "scripts": {
     "prepare": "husky && astro sync",
     "dev": "astro dev",
